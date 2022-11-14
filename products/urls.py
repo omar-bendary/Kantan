@@ -1,0 +1,19 @@
+from django.urls import path
+from .views import MaterialAPIView, ProductListAPIView, ProductDetailAPIView, FilterListAPIView, CategoryAPIView, ProductReviewAPIViewSet, WishlistModelViewSet
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register('reviews', ProductReviewAPIViewSet, basename='product-reviews')
+router.register('wishlist', WishlistModelViewSet, basename='wishlist')
+
+urlpatterns = [
+    path('category_list/', CategoryAPIView.as_view(), name='category-list'),
+    path('<int:pk>/material_list/',
+         MaterialAPIView.as_view(), name='material_list'),
+    path('product_list/',
+         ProductListAPIView.as_view(), name='product-list'),
+    path('product_detail/<int:pk>/',
+         ProductDetailAPIView.as_view(), name='product-detail'),
+    path('filter-list/', FilterListAPIView.as_view(), name='filter-list'),
+]
+urlpatterns += router.urls
