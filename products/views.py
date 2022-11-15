@@ -10,6 +10,7 @@ from .filters import ProductFilter
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+import json
 
 
 class ProductListAPIView(ListAPIView):
@@ -99,3 +100,59 @@ class WishlistModelViewSet(ModelViewSet):
 
     def get_serializer_context(self, **kwargs):
         return {'user_id': self.request.user.id}
+
+
+class AddToCartAPIView(APIView):
+    def post(self, request):
+
+        product_ids = request.data['products'].split(',')
+        quantities = request.data['quantities'].split(',')
+        sizes = request.data['sizes'].split(',')
+
+        cart = []
+        id_unique = {}
+        total_price = 0
+        for index, product_id in enumerate(product_ids):
+
+            try:
+                product = Product.objects.get(pk=product_id)
+                product_detail = Detail.objects.get(
+                    product=product_id, size=sizes[index])
+
+            except Exception:
+                continue
+
+            if product_id in id_unique.keys():
+                id_index = id_unique[product_id]
+                cart[id_index]['quantity'] += int(quantities[index])
+                total_price += (float(product_detail.price)
+                                - (float(product_detail.price)
+                                   * float(product_detail.discount_in_precentage/100)))\
+                    * float(quantities[index])
+
+            else:
+                product_dict = {'product_id': product_id,
+                                'product_name': product.name,
+                                'quantity': int(quantities[index]),
+                                'product_original_price':
+                                float(product_detail.price),
+                                'discount':
+                                float(product_detail.price) *
+                                float(product_detail.discount_in_precentage/100),
+                                'unit_price_after_discount':
+                                    float(product_detail.price) -
+                                (float(product_detail.price)
+                                        * float(product_detail.discount_in_precentage/100)),
+                                'product_size': str(product_detail.size),
+                                'out_of_stock': (product_detail.quantity > quantities[index])
+                                }
+
+                cart.append(product_dict)
+                id_unique[product_id] = index
+
+                total_price += product_dict['unit_price_after_discount'] * \
+                    float(product_dict['quantity'])
+
+        cart.append({'total_price': total_price})
+        return Response(cart)
+        # return Response('Hi')

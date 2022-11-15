@@ -1,7 +1,8 @@
-from itertools import count
+
 from rest_framework import serializers
-from django.db.models.aggregates import Min, Sum, Avg
-from .models import Category, Image, Material, Product, Detail, Review, WishlistItem
+from django.db.models.aggregates import Min, Avg
+from .models import (Category, Image, Material,
+                     Product, Detail, Review, WishlistItem)
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -110,4 +111,5 @@ class WishlistItemSerializer(serializers.ModelSerializer):
 
     def save(self, **kwargs):
         WishlistItem.objects.create(
-            product=self.validated_data['product'], user_id=self.context['user_id'])
+            product=self.validated_data['product'],
+            user_id=self.context['user_id'])

@@ -58,8 +58,9 @@ class Detail(models.Model):
         Size, on_delete=models.CASCADE, related_name='detail_item')
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField()
-    discount_in_precentage = models.DecimalField(max_digits=3, decimal_places=0, default=Decimal(
-        0), validators=PERCENTAGE_VALIDATOR)
+    discount_in_precentage = \
+        models.DecimalField(max_digits=3,  decimal_places=0, default=Decimal(
+            0), validators=PERCENTAGE_VALIDATOR)
     type = models.CharField(
         max_length=5, choices=TYPE_CHOICES, default=ADULT_TYPE)
 

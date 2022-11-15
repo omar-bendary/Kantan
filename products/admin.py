@@ -1,10 +1,17 @@
 from django.contrib import admin
-from .models import Category, Product, Image, Detail, Material, Size, Review, WishlistItem
+from .models import (Category, Product, Image,
+                     Detail, Material, Size, Review, WishlistItem)
+
+
+class ProductDetailInline(admin.StackedInline):
+    model = Detail
+    extra = 0
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'material']
+    list_display = ['id', 'name', 'material']
+    inlines = [ProductDetailInline]
 
 
 @admin.register(Detail)
@@ -29,7 +36,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Size)
 class SizeAdmin(admin.ModelAdmin):
-    list_display = ['length', 'width', 'height', ]
+    list_display = ['id', 'length', 'width', 'height', ]
 
 
 @admin.register(Review)
